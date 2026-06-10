@@ -43,7 +43,7 @@ The Django web app provides the main browser interface, while the REST API allow
 
 ```text
 vehicle-management-system/
-+-- appointments/
++--/
 |   +-- manage.py
 |   +-- db.sqlite3
 |   +-- vehiclemanagement/
