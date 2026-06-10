@@ -1,0 +1,39 @@
+
+Requested changes:
+
+1. Add status field (Pending, Confirmed, Completed)
+2. Add mechanic_name field
+3. Create and run migrations:
+   python manage.py makemigrations
+   python manage.py migrate
+
+4. Add Edit Appointment page:
+   path('appointment/edit/<int:id>/', views.edit_appointment)
+
+5. Add Delete Appointment page:
+   path('appointment/delete/<int:id>/', views.delete_appointment)
+
+6. Appointment logic fixes:
+   - Prevent double booking for same date/time.
+   - Prevent booking in the past.
+   - Prevent duplicate vehicle appointment at same slot.
+   - Validate mechanic assignment.
+
+7. Search/filter:
+   - registration number
+   - customer name
+   - status
+   - date
+
+8. Dashboard statistics:
+   - Total appointments
+   - Pending appointments
+   - Confirmed appointments
+   - Completed appointments
+
+9. Bootstrap UI improvements:
+   - cards
+   - badges
+   - responsive tables
+   - search form
+   - action buttons

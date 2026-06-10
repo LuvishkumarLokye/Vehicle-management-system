@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-slate-900">Repair History</h1>
+    <p class="text-slate-500 mt-2">Log and view detailed vehicle repair records and costs.</p>
+</div>
+
+<!-- Search Form -->
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+    <form method="POST" action="{% url 'vehiclemanagement:repairpage' %}" class="flex flex-col md:flex-row gap-4 items-end">
+        {% csrf_token %}
+        <div class="flex-grow w-full">
+            <label for="reg_number" class="block text-sm font-medium text-slate-700 mb-1">Vehicle Registration Number</label>
+            <input type="text" id="reg_number" name="vehicle_regis_number" required placeholder="e.g., ABC-1234"
+                   class="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+        </div>
+        <button type="submit" class="w-full md:w-auto inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors h-[42px] items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            Search
+        </button>
+    </form>
+</div>
+
+{% if error %}
+    <div class="p-4 rounded-lg border bg-red-50 border-red-200 text-red-800 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium"><strong>Error:</strong> {{ error }}</p>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% if success %}
+    <div class="p-4 rounded-lg border bg-green-50 border-green-200 text-green-800 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium"><strong>Success:</strong> {{ success }}</p>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Display vehicle details if found -->
+{% if vehicle %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Vehicle Details Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                <h3 class="text-lg font-semibold text-slate-900">Vehicle Information</h3>
+            </div>
+            <div class="p-6">
+                <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                    <div>
+                        <dt class="text-sm font-medium text-slate-500">Registration</dt>
+                        <dd class="mt-1 text-sm font-semibold text-blue-600">{{ vehicle.vehicle_regis_number }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-slate-500">Owner</dt>
+                        <dd class="mt-1 text-sm text-slate-900 font-medium">{{ vehicle.customer_name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-slate-500">Phone</dt>
+                        <dd class="mt-1 text-sm text-slate-900">{{ vehicle.customer_phone_number }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-slate-500">Current Mileage</dt>
+                        <dd class="mt-1 text-sm text-slate-900 font-bold text-lg">{{ vehicle.current_milleage }} <span class="text-xs font-normal text-slate-500">km</span></dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Add Repair Form -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                <h3 class="text-lg font-semibold text-slate-900">Add Repair Entry</h3>
+            </div>
+            <form method="POST" action="{% url 'vehiclemanagement:repairpage' %}" class="p-6 space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="vehicle_regis_number" value="{{ vehicle.vehicle_regis_number }}">
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Repair Description</label>
+                    <textarea id="description" name="description" required placeholder="Describe the work done..."
+                              class="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border h-24"></textarea>
+                </div>
+
+                <div>
+                    <label for="costs" class="block text-sm font-medium text-slate-700 mb-1">Repair Cost (Rs)</label>
+                    <input type="number" id="costs" name="costs" step="0.01" min="0" required placeholder="0.00"
+                           class="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                        Add Repair Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Display repair records -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-slate-900">Repair Log</h3>
+            <div class="text-sm font-medium text-slate-500">
+                Total Expenses: <span class="text-slate-900 font-bold">Rs<!-- Logic for total could be added here if needed, but keeping features as is --></span>
+            </div>
+        </div>
+
+        {% if repair_records %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Description</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Date Repaired</th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-slate-200">
+                        {% for repair in repair_records %}
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 text-sm text-slate-900 max-w-xs truncate">
+                                    {{ repair.description }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                                    {{ repair.date_changed|date:"Y-m-d" }} <span class="text-xs text-slate-400 ml-1">{{ repair.date_changed|time:"H:i" }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-slate-900">
+                                    Rs{{ repair.costs }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="p-12 text-center text-slate-500 italic">
+                No repair records found for this vehicle.
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% endblock %}

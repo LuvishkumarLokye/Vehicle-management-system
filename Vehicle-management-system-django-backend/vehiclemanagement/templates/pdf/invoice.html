@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Invoice {{ invoice.number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 28px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            line-height: 1.45;
+            background: #ffffff;
+        }
+
+        .invoice {
+            border: 1px solid #d7dde6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #12324a;
+            color: #ffffff;
+            padding: 30px 34px;
+        }
+
+        .header-row,
+        .details-row,
+        .summary-row {
+            display: table;
+            width: 100%;
+        }
+
+        .brand,
+        .invoice-meta,
+        .details-box,
+        .summary-spacer,
+        .totals-box {
+            display: table-cell;
+            vertical-align: top;
+        }
+
+        .brand {
+            width: 58%;
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0;
+            margin-bottom: 6px;
+        }
+
+        .company-subtitle {
+            color: #cbd5e1;
+            font-size: 12px;
+        }
+
+        .invoice-meta {
+            width: 42%;
+            text-align: right;
+        }
+
+        .invoice-title {
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: 0;
+            margin-bottom: 8px;
+        }
+
+        .meta-line {
+            color: #e5edf6;
+            margin-top: 3px;
+        }
+
+        .content {
+            padding: 30px 34px 24px;
+        }
+
+        .details-row {
+            margin-bottom: 26px;
+        }
+
+        .details-box {
+            width: 50%;
+            padding-right: 16px;
+        }
+
+        .details-card {
+            border: 1px solid #dde3ec;
+            border-radius: 6px;
+            padding: 15px 16px;
+            min-height: 116px;
+            background: #f8fafc;
+        }
+
+        .section-label {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0;
+            margin-bottom: 9px;
+            text-transform: uppercase;
+        }
+
+        .customer-name {
+            color: #0f172a;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .detail-line {
+            color: #475569;
+            margin-top: 3px;
+        }
+
+        .maintenance-note {
+            margin-top: 9px;
+            padding-top: 9px;
+            border-top: 1px solid #dde3ec;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .maintenance-note span {
+            color: #475569;
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        th {
+            background: #edf2f7;
+            border-bottom: 1px solid #cbd5e1;
+            color: #334155;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 11px 10px;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        td {
+            border-bottom: 1px solid #e5e7eb;
+            color: #1f2937;
+            padding: 12px 10px;
+            vertical-align: top;
+        }
+
+        .date-col {
+            width: 18%;
+            color: #64748b;
+            white-space: nowrap;
+        }
+
+        .description-col {
+            width: 58%;
+        }
+
+        .amount-col {
+            width: 24%;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .empty-row td {
+            color: #64748b;
+            padding: 24px 10px;
+            text-align: center;
+        }
+
+        .summary-row {
+            margin-top: 24px;
+        }
+
+        .summary-spacer {
+            width: 55%;
+        }
+
+        .totals-box {
+            width: 45%;
+            border: 1px solid #d7dde6;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .total-line {
+            display: table;
+            width: 100%;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .total-line:last-child {
+            border-bottom: 0;
+        }
+
+        .total-label,
+        .total-value {
+            display: table-cell;
+            padding: 10px 13px;
+        }
+
+        .total-label {
+            color: #475569;
+        }
+
+        .total-value {
+            color: #0f172a;
+            font-weight: 700;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .grand-total {
+            background: #12324a;
+            color: #ffffff;
+        }
+
+        .grand-total .total-label,
+        .grand-total .total-value {
+            color: #ffffff;
+            font-size: 15px;
+            padding-top: 13px;
+            padding-bottom: 13px;
+        }
+
+        .note {
+            margin-top: 26px;
+            padding: 14px 16px;
+            border-left: 4px solid #12324a;
+            background: #f8fafc;
+            color: #475569;
+        }
+
+        .footer {
+            padding: 16px 34px 24px;
+            color: #64748b;
+            font-size: 11px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice">
+        <div class="header">
+            <div class="header-row">
+                <div class="brand">
+                    <div class="company-name">Vehicle Management System</div>
+                    <div class="company-subtitle">Repairs and vehicle service invoice</div>
+                </div>
+                <div class="invoice-meta">
+                    <div class="invoice-title">INVOICE</div>
+                    <div class="meta-line">{{ invoice.number }}</div>
+                    <div class="meta-line">{{ invoice.date|date:"d M Y" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="details-row">
+                <div class="details-box">
+                    <div class="details-card">
+                        <div class="section-label">Bill To</div>
+                        <div class="customer-name">{{ vehicle.customer_name }}</div>
+                        <div class="detail-line">Phone: {{ vehicle.customer_phone_number }}</div>
+                    </div>
+                </div>
+                <div class="details-box">
+                    <div class="details-card">
+                        <div class="section-label">Vehicle Details</div>
+                        <div class="customer-name">{{ vehicle.vehicle_regis_number }}</div>
+                        <div class="detail-line">Current mileage: {{ vehicle.current_milleage }} km</div>
+                        <div class="detail-line">Latest repairs shown: {{ invoice.repair_count }}</div>
+                        {% if next_oil_change %}
+                        <div class="maintenance-note">
+                            Next oil change: {{ next_oil_change.new_milleage }} km
+                            <span>
+                                {% if oil_change_remaining > 0 %}
+                                    Due in {{ oil_change_remaining }} km
+                                {% elif oil_change_remaining == 0 %}
+                                    Due now
+                                {% else %}
+                                    Overdue by {{ oil_change_overdue_by }} km
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% else %}
+                        <div class="maintenance-note">
+                            Next oil change: Not scheduled
+                            <span>No oil-change record found for this vehicle.</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="date-col">Date</th>
+                        <th class="description-col">Repair Description</th>
+                        <th class="amount-col">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in repairs %}
+                    <tr>
+                        <td class="date-col">{{ item.date_changed|date:"d M Y" }}</td>
+                        <td class="description-col">{{ item.description }}</td>
+                        <td class="amount-col">Rs {{ item.costs|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="3">No repair records found for this vehicle.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="summary-row">
+                <div class="summary-spacer"></div>
+                <div class="totals-box">
+                    <div class="total-line">
+                        <div class="total-label">Subtotal</div>
+                        <div class="total-value">Rs {{ invoice.subtotal|floatformat:2 }}</div>
+                    </div>
+                    <div class="total-line">
+                        <div class="total-label">VAT {{ invoice.tax_rate|floatformat:0 }}%</div>
+                        <div class="total-value">Rs {{ invoice.tax_amount|floatformat:2 }}</div>
+                    </div>
+                    <div class="total-line grand-total">
+                        <div class="total-label">Total Due</div>
+                        <div class="total-value">Rs {{ invoice.total_amount|floatformat:2 }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note">
+                Payment terms: {{ invoice.payment_terms }}. This invoice includes only the latest four repair records for the vehicle.
+            </div>
+        </div>
+
+        <div class="footer">
+            Thank you for your business.
+        </div>
+    </div>
+</body>
+</html>
